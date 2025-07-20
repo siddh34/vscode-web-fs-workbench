@@ -7,25 +7,6 @@ import {
 } from "vs/workbench/browser/web.api";
 declare const window: any;
 
-// File System Access API types
-interface FileSystemHandle {
-	kind: "file" | "directory";
-	name: string;
-}
-
-interface FileSystemDirectoryHandle extends FileSystemHandle {
-	kind: "directory";
-	getDirectoryHandle(name: string): Promise<FileSystemDirectoryHandle>;
-	getFileHandle(name: string): Promise<FileSystemFileHandle>;
-	values(): AsyncIterableIterator<FileSystemHandle>;
-	entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
-}
-
-interface FileSystemFileHandle extends FileSystemHandle {
-	kind: "file";
-	getFile(): Promise<File>;
-}
-
 declare global {
 	interface Window {
 		showDirectoryPicker?: () => Promise<FileSystemDirectoryHandle>;
@@ -91,7 +72,6 @@ declare global {
 
 							// Open the directory as workspace
 							const fsAccessUri = URI.parse("fsaccess:/");
-							const newWorkspace = { folderUri: fsAccessUri };
 
 							// Reload with the new workspace
 							window.location.hash = `#${JSON.stringify({
@@ -144,18 +124,12 @@ declare global {
 			// Set the directory handle in the provider
 			window.fileSystemAccessProvider.setDirectoryHandle(directoryHandle);
 
-			// Create a new workspace configuration with fsaccess scheme
-			const newConfig = {
-				...config,
-				folderUri: URI.parse("fsaccess:/").toJSON(),
-			};
-
 			// Update the page to load the new workspace
 			const newUrl = new URL(window.location.href);
 			newUrl.searchParams.set("folder", "fsaccess:/");
 			window.location.href = newUrl.toString();
 		} catch (error) {
-			if (error.name !== "AbortError") {
+			if (error instanceof Error && error.name !== "AbortError") {
 				console.error("Folder selection failed:", error);
 				alert("Failed to open folder: " + error.message);
 			}
@@ -180,7 +154,7 @@ declare global {
 				// This would require extending the FileSystemProvider to handle individual files
 			}
 		} catch (error) {
-			if (error.name !== "AbortError") {
+			if (error instanceof Error && error.name !== "AbortError") {
 				console.error("File selection failed:", error);
 				alert("Failed to open files: " + error.message);
 			}
