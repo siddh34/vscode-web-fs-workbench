@@ -1,6 +1,6 @@
 {
 	"name": "vscode-web-fs-workbench",
-	"version": "1.9.2",
+	"version": "1.102.2",
 	"description": "Visual Studio Code for browser",
 	"files": [
 		"dist"
