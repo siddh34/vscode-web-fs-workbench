@@ -9,6 +9,6 @@
 	"license": "MIT",
 	"dependencies": {
 		"express": "^4.17.1",
-		"vscode-web-fs-workbench": "^1.0.0"
+		"vscode-web-fs-workbench": "^1.9.2"
 	}
 }
